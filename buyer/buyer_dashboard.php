@@ -24,7 +24,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'buyer') {
         <h3 class="text-center text-white mt-3">Land System</h3>
         <ul class="nav flex-column mt-4">
             <li class="nav-item">
-                <a href="officials_dashboard.php" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="buyer_dashboard.php" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
             </li>
             <li class="nav-item">
                 <a href="verify_land.php" class="nav-link"><i class="fas fa-check-circle"></i> See Available Land</a>
