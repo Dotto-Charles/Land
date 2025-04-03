@@ -7,46 +7,60 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'buyer') {
     exit();
 }
 
+require '../config/db.php'; // Ensure database connection
+
 // Check if form was submitted via POST
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['make_payment'])) {
     // Get the land details and price from the form
     $land_id = $_POST['land_id'];
     $price = $_POST['price'];
-
-    // Get the current user's ID
     $user_id = $_SESSION['user_id'];
 
-    // Generate a unique 10-digit control number
-    $transaction_id = generateUniqueControlNumber($pdo);
+    // Remove expired control numbers (older than 3 hours)
+    $stmt = $pdo->prepare("DELETE FROM payments WHERE payment_status = 'pending' AND payment_date < NOW() - INTERVAL 3 HOUR");
+    $stmt->execute();
 
-    // Fetch buyer's email from the database
+    // Check if the user already has a valid control number for this land
+    $stmt = $pdo->prepare("SELECT transaction_id FROM payments 
+                           WHERE payer_id = ? AND land_id = ? AND payment_status = 'pending' 
+                           AND payment_date >= NOW() - INTERVAL 3 HOUR");
+    $stmt->execute([$user_id, $land_id]);
+    $existing_payment = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($existing_payment) {
+        // User already has a valid control number
+        $transaction_id = $existing_payment['transaction_id'];
+    } else {
+        // Generate a new control number
+        $transaction_id = generateUniqueControlNumber($pdo);
+
+        // Insert payment record into the database
+        $stmt = $pdo->prepare("INSERT INTO payments (payer_id, land_id, amount, transaction_id, payment_status, payment_date) 
+                               VALUES (?, ?, ?, ?, ?, NOW())");
+        $stmt->execute([$user_id, $land_id, $price, $transaction_id, 'pending']);
+    }
+
+    // Fetch buyer's email
     $stmt = $pdo->prepare("SELECT email FROM users WHERE user_id = ?");
     $stmt->execute([$user_id]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
+    
     if (!$user) {
         die("User not found.");
     }
 
     $buyer_email = $user['email'];
 
-    // Insert payment record into the database (pending payment)
-    $stmt = $pdo->prepare("INSERT INTO payments (payer_id, land_id, amount, transaction_id, payment_status) 
-                           VALUES (?, ?, ?, ?, ?)");
-    $stmt->execute([$user_id, $land_id, $price, $transaction_id, 'pending']);
-
-    // Send Control Number to the user's email
+    // Send Control Number to User's Email
     $subject = "Your Payment Control Number";
-    $message = "Dear Buyer,\n\nYour control number for the land purchase is: $transaction_id.\n\nUse this number to complete your payment via mobile money or bank.\n\nThank you!";
-    $headers = "From: tittoc2@gmail.com";
+    $message = "Dear Buyer,\n\nYour control number for the land purchase is: $transaction_id.\n\nUse this number to complete your payment via mobile money or bank.\n\nThis control number is valid for 3 hours.\n\nThank you!\n\nLand System Team";
+    $headers = "From: no-reply@land-system.com\r\n";
+    $headers .= "Reply-To: support@land-system.com\r\n";
+    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
 
-    if (mail($buyer_email, $subject, $message, $headers)) {
-        echo "Control number sent to your email.";
-    } else {
-        echo "Failed to send control number email.";
-    }
+    mail($buyer_email, $subject, $message, $headers);
 
-    // Redirect to the payment options page
+    // Redirect to payment options page
     header("Location: payment_options.php?transaction_id=" . urlencode($transaction_id));
     exit();
 }
