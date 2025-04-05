@@ -66,6 +66,12 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'landowner') {
                         <h3>Sell Land</h3>
                     </a>
                 </div>
+                <div class="feature-card">
+                    <a href="owner_approve_requests.php">
+                        <img src="../icons/sell.png" alt="Sell Land">
+                        <h3>View Requests for Purchase</h3>
+                    </a>
+                </div>
             </section>
         </main>
     </div>

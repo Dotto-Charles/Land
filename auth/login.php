@@ -54,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             } else {
                 // User not found
-                echo "<script> alert('Wrong username or national ID');</script>";
+                echo "<script> alert('Wrong password or national ID');</script>";
             }
 
         } catch (PDOException $e) {

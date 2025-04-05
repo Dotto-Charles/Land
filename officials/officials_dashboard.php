@@ -72,7 +72,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'government_official')
                     <div class="card">
                         <div class="card-body text-center">
                             <img src="icons/requests.png" class="icon-img" alt="Manage Requests">
-                            <h5><a href="manage_requests.php">Manage Requests</a></h5>
+                            <h5><a href="gov_ownership_approval.php">Manage Requests</a></h5>
                         </div>
                     </div>
                 </div>

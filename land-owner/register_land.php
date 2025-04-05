@@ -19,21 +19,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $longitude = $_POST['longitude'];
 
     try {
+        // Check for duplicate land title number
+        $checkStmt = $pdo->prepare("SELECT * FROM land_parcels WHERE land_title_no = ?");
+        $checkStmt->execute([$land_title_no]);
+        
+        if ($checkStmt->rowCount() > 0) {
+            echo "<script>
+                    alert('Error: A land title number already exists in the system.');
+                    window.history.back();  // Takes user back to the form
+                  </script>";
+            exit();
+        }
+    
         // Insert land registration into the database
         $stmt = $pdo->prepare("INSERT INTO land_parcels (owner_id, land_title_no, land_size, land_use, region_name, district_name, ward_name, village_name, latitude, longitude)
                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([$owner_id, $land_title_no, $land_size, $land_use, $region_name, $district_name, $ward_name, $village_name, $latitude, $longitude]);
-
-        // Show success message and redirect
+    
         echo "<script>
                 alert('SUCCESSFUL INFORMATION SENT');
                 setTimeout(function(){
                     window.location.href = 'owner_dashboard.php';
-                }, 2000); // Redirect after 2 seconds
+                }, 2000);
               </script>";
     } catch (PDOException $e) {
-        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
+        echo "<script>alert('Database Error: " . $e->getMessage() . "');</script>";
     }
+    
 }
 ?>
 

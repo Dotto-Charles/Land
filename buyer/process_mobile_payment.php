@@ -24,3 +24,4 @@ $stmt->execute(['paid', 'Mobile (MPesa)', $transaction_id]);
 // Redirect to a confirmation page or display success message
 header("Location: payment_confirmation.php?transaction_id=" . $transaction_id);
 exit();
+
