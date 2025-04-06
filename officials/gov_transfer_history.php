@@ -2,22 +2,30 @@
 include_once '../config/db.php';
 session_start();
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'government') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'government_official') {
     header("Location: ../auth/login.php");
     exit();
 }
 
 // Fetch all approved land transfers
 $stmt = $pdo->prepare("
-    SELECT p.*, u.fullname AS buyer_name, l.land_title_no, l.land_size, l.price, o.fullname AS previous_owner
-    FROM payments p
-    JOIN land_parcels l ON p.land_id = l.land_id
-    JOIN users u ON p.payer_id = u.user_id
-    JOIN users o ON p.old_owner_id = o.user_id
-    WHERE p.payment_status = 'paid' 
-    AND l.owner_approval_status = 'approved' 
-    AND l.gov_approval_status = 'approved'
-    ORDER BY p.payment_id DESC
+    SELECT 
+        lt.transfer_id,
+        lt.transfer_date,
+        lt.sale_price,
+        l.land_title_no,
+        l.land_size,
+        b.first_name AS buyer_name,
+        s.first_name AS seller_name,
+        p.transaction_id,
+        p.amount
+    FROM land_transfers lt
+    JOIN land_parcels l ON lt.land_id = l.land_id
+    JOIN users b ON lt.buyer_id = b.user_id
+    JOIN users s ON lt.seller_id = s.user_id
+    LEFT JOIN payments p ON p.transfer_id = lt.transfer_id
+    WHERE lt.transfer_status = 'Approved'
+    ORDER BY lt.transfer_date DESC
 ");
 $stmt->execute();
 $transfers = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -55,7 +63,7 @@ $transfers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <td><?= htmlspecialchars($t['land_title_no']) ?></td>
                 <td><?= $t['land_size'] ?></td>
                 <td><?= number_format($t['amount']) ?></td>
-                <td><?= htmlspecialchars($t['previous_owner']) ?></td>
+                <td><?= htmlspecialchars($t['seller_name']) ?></td> <!-- Fixed: was 'previous_owner' -->
                 <td><?= htmlspecialchars($t['buyer_name']) ?></td>
                 <td><?= htmlspecialchars($t['transaction_id']) ?></td>
             </tr>

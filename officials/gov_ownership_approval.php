@@ -31,7 +31,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="sidebar">
         <h2>Government Panel</h2>
         <ul>
-            <li><a href="gov_dashboard.php">Dashboard</a></li>
+            <li><a href="officials_dashboard.php">Dashboard</a></li>
             <li><a href="gov_approval_requests.php">Approval Requests</a></li>
             <li><a href="../auth/logout.php">Logout</a></li>
         </ul>

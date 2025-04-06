@@ -42,9 +42,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Land</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .back-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    margin: 10px;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.back-btn:hover {
+    background-color: #45a049;
+}
+    </style>
 </head>
 <body>
     <div class="container">
+    <a href="owner_dashboard.php" class="back-btn">Back</a> 
         <h2>Search Land</h2>
         <form method="POST">
             <input type="text" name="land_title_no" placeholder="Enter Land Title Number" required>
@@ -54,22 +73,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php if (isset($error)) { echo "<p class='error'>$error</p>"; } ?>
 
         <?php if (isset($land) && $land) { ?>
-            <div class="result">
-                <h3>Land Information</h3>
-                <p><strong>Land Title No:</strong> <?= htmlspecialchars($land['land_title_no']); ?></p>
-                <p><strong>Owner:</strong> <?= htmlspecialchars($land['first_name'] . ' ' . $land['last_name']); ?></p>
-                <p><strong>Phone:</strong> <?= htmlspecialchars($land['phone_number']); ?></p>
-                <p><strong>Land Size:</strong> <?= htmlspecialchars($land['land_size']); ?> sqm</p>
-                <p><strong>Land Use:</strong> <?= htmlspecialchars($land['land_use']); ?></p>
-                <p><strong>Latitude:</strong> <?= htmlspecialchars($land['latitude']); ?></p>
-                <p><strong>Longitude:</strong> <?= htmlspecialchars($land['longitude']); ?></p>
-                <p><strong>Region:</strong> <?= htmlspecialchars($land['region_name']); ?></p>
-                <p><strong>District:</strong> <?= htmlspecialchars($land['district_name']); ?></p>
-                <p><strong>Ward:</strong> <?= htmlspecialchars($land['ward_name']); ?></p>
-                <p><strong>Village:</strong> <?= htmlspecialchars($land['village_name']); ?></p>
-                <p><strong>Registration Status:</strong> <?= htmlspecialchars($land['registration_status']); ?></p>
-            </div>
-        <?php } ?>
+    <div class="result">
+        <h3>Land Information</h3>
+        <table border="1" cellpadding="10" cellspacing="0">
+            <tr><th>Land Title No</th><td><?= htmlspecialchars($land['land_title_no']); ?></td></tr>
+            <tr><th>Owner</th><td><?= htmlspecialchars($land['first_name'] . ' ' . $land['last_name']); ?></td></tr>
+            <tr><th>Phone</th><td><?= htmlspecialchars($land['phone_number']); ?></td></tr>
+            <tr><th>Land Size</th><td><?= htmlspecialchars($land['land_size']); ?> sqm</td></tr>
+            <tr><th>Land Use</th><td><?= htmlspecialchars($land['land_use']); ?></td></tr>
+            <tr><th>Latitude</th><td><?= htmlspecialchars($land['latitude']); ?></td></tr>
+            <tr><th>Longitude</th><td><?= htmlspecialchars($land['longitude']); ?></td></tr>
+            <tr><th>Region</th><td><?= htmlspecialchars($land['region_name']); ?></td></tr>
+            <tr><th>District</th><td><?= htmlspecialchars($land['district_name']); ?></td></tr>
+            <tr><th>Ward</th><td><?= htmlspecialchars($land['ward_name']); ?></td></tr>
+            <tr><th>Village</th><td><?= htmlspecialchars($land['village_name']); ?></td></tr>
+            <tr><th>Registration Status</th><td><?= htmlspecialchars($land['registration_status']); ?></td></tr>
+        </table>
+    </div>
+<?php } ?>
+
     </div>
 </body>
 </html>

@@ -51,25 +51,54 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['purchase_land'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purchase Land</title>
     <link rel="stylesheet" href="stylepurchase.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../officials/styleofiicials.css"> <!-- External CSS -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+<div class="d-flex">
     <!-- Sidebar -->
     <div class="sidebar">
-        <h2>Land SYSTEM</h2>
-        <ul>
-            <li><a href="owner_dashboard.php"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="search_land.php"><i class="fas fa-search"></i> Search Land</a></li>
-            <li><a href="purchase_land.php" class="active"><i class="fas fa-money-bill"></i> Purchase Land</a></li>
-            <li><a href="../auth/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        <h3 class="text-center text-white mt-3">Land System</h3>
+        <ul class="nav flex-column mt-4">
+            <li class="nav-item">
+                <a href="owner_dashboard.php" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a href="register_land.php" class="nav-link"><i class="fas fa-check-circle"></i> Register Land</a>
+            </li>
+            <li class="nav-item">
+                <a href="search_land.php" class="nav-link"><i class="fas fa-tasks"></i> search Land</a>
+            </li>
+            <li class="nav-item">
+                <a href="view_requests.php" class="nav-link"><i class="fas fa-chart-line"></i> View all Your Requested Land</a>
+            </li>
+            
+            <li class="nav-item">
+            <a href="owner_approve_requests.php" class="nav-link"><i class="fas fa-chart-line"></i> Approve Requests</a>
+            </li>
+            <li class="nav-item">
+            <a href="owner_transfer_history.php" class="nav-link"><i class="fas fa-chart-line"></i> Transfer History</a>
+            </li>
+            <li class="nav-item">
+                <a href="../auth/logout.php" class="nav-link logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </li>
         </ul>
     </div>
 
     <!-- Main Content -->
-    <div class="main-content">
-        <header>
-            <h1><i class="fas fa-money-check-alt"></i> Purchase Land</h1>
-        </header>
+    <div class="content">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
+            <div class="container-fluid">
+                <h4 class="navbar-brand">Land Owner</h4>
+                <div class="ms-auto d-flex align-items-center">
+                    <span class="me-3">Welcome, <?= $_SESSION['first_name']; ?>!</span>
+                    <i class="fas fa-user-circle fa-2x text-primary"></i>
+                </div>
+            </div>
+        </nav>
 
         <div class="content">
             <form method="POST" action="">
@@ -95,7 +124,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['purchase_land'])) {
                     <tr><td><strong>District:</strong></td><td><?= htmlspecialchars($land['district_name']); ?></td></tr>
                     <tr><td><strong>Ward:</strong></td><td><?= htmlspecialchars($land['ward_name']); ?></td></tr>
                     <tr><td><strong>Village:</strong></td><td><?= htmlspecialchars($land['village_name']); ?></td></tr>
-                    <tr><td><strong>Current Price:</strong></td><td><?= number_format(htmlspecialchars($land['price']), 2); ?> TZS</td></tr>
+                    <tr>
+    <td><strong>Current Price:</strong></td>
+    <td>
+        <?= is_numeric($land['price']) ? number_format((float)$land['price'], 2) : '0.00'; ?> TZS
+    </td>
+</tr>
+
                 </table>
 
                 <h2>Set Purchase Price</h2>

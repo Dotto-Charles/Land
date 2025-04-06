@@ -1,30 +1,43 @@
 <?php
-include_once '../config/db.php';
 session_start();
+include '../config/db.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'landowner') {
+if (!isset($_SESSION['user_id'])) {
     header("Location: ../auth/login.php");
-    exit();
+    exit;
 }
 
-$owner_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user_id'];
 
-// Get all lands owned by this owner with pending approval and already paid
-$stmt = $pdo->prepare("
-    SELECT p.*, l.land_title_no, u.first_name AS buyer_name
-    FROM payments p
-    JOIN land_parcels l ON p.land_id = l.land_id
-    JOIN users u ON p.payer_id = u.user_id
-    WHERE l.owner_id = ? AND p.payment_status = 'paid' AND l.owner_approval_status = 'pending'
-");
-$stmt->execute([$owner_id]);
-$requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Check if user has already submitted a pending request
+    $check = $pdo->prepare("SELECT * FROM land_title_requests WHERE user_id = ? AND request_status = 'Pending'");
+    $check->execute([$user_id]);
+
+    if ($check->rowCount() > 0) {
+        header("Location: land_title_requests.php?message=You already have a pending request.");
+        exit;
+    }
+
+    // Create new request
+    $stmt = $pdo->prepare("INSERT INTO land_title_requests (user_id) VALUES (?)");
+    $stmt->execute([$user_id]);
+
+    header("Location: land_title_requests.php?message=Title request submitted successfully.");
+    exit;
+}
+
+// Fetch user's past requests
+$requests = $pdo->prepare("SELECT * FROM land_title_requests WHERE user_id = ?");
+$requests->execute([$user_id]);
+$my_requests = $requests->fetchAll();
 ?>
 
+<!-- HTML + Styling -->
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Approve Land Sales</title>
+    <title>Request Land Title Number</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../officials/styleofiicials.css"> <!-- External CSS -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
@@ -57,7 +70,9 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <li class="nav-item">
                 <a href="purchase_land.php" class="nav-link"><i class="fas fa-chart-line"></i> Purchase Land</a>
             </li>
-            
+            <li class="nav-item">
+            <a href="owner_approve_requests.php" class="nav-link"><i class="fas fa-chart-line"></i> Approve Requests</a>
+            </li>
             <li class="nav-item">
             <a href="owner_transfer_history.php" class="nav-link"><i class="fas fa-chart-line"></i> Transfer History</a>
             </li>
@@ -79,36 +94,38 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
         </nav>
+<h2>Request a New Land Title Number</h2>
 
-    <div class="main-content">
-        <h2>Land Sale Approval Requests</h2>
-        <table border="1" cellpadding="10">
+<?php if (isset($_GET['message'])): ?>
+    <div class="msg"><?= htmlspecialchars($_GET['message']) ?></div>
+<?php endif; ?>
+
+<form method="POST">
+    <p>Click below to request a land title number. A surveyor will review and assign a title if approved.</p>
+    <button type="submit">Request Land Title Number</button>
+</form>
+
+<h3>Your Land Title Requests</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Request ID</th>
+            <th>Status</th>
+            <th>Land Title Number</th>
+            <th>Requested At</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($my_requests as $req): ?>
             <tr>
-                <th>Buyer</th>
-                <th>Land Title No</th>
-                <th>Amount</th>
-                <th>Control Number</th>
-                <th>Action</th>
+                <td><?= $req['request_id'] ?></td>
+                <td><?= $req['request_status'] ?></td>
+                <td><?= $req['land_title_no'] ?? 'Pending' ?></td>
+                <td><?= $req['requested_at'] ?></td>
             </tr>
-            <?php foreach ($requests as $row): ?>
-                <tr>
-                    <td><?= htmlspecialchars($row['buyer_name']) ?></td>
-                    <td><?= htmlspecialchars($row['land_title_no']) ?></td>
-                    <td><?= number_format($row['amount'], 2) ?> TZS</td>
-                    <td><?= htmlspecialchars($row['transaction_id']) ?></td>
-                    <td>
-                        <form method="POST" action="process_owner_approval.php" style="display:inline;">
-                            <input type="hidden" name="land_id" value="<?= $row['land_id'] ?>">
-                            <button type="submit" name="approve" class="btn-approve">Approve</button>
-                        </form>
-                        <form method="POST" action="process_owner_approval.php" style="display:inline;">
-                            <input type="hidden" name="land_id" value="<?= $row['land_id'] ?>">
-                            <button type="submit" name="reject"  class="btn-reject">Reject</button>
-                        </form>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
-    </div>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
 </body>
 </html>

@@ -1,14 +1,12 @@
 <?php
 session_start();
-include_once '../config/db.php';  // Ensure this path is correct based on your folder structure
+include_once '../config/db.php';
 
-// Fetch regions
 $regions = $pdo->query("SELECT * FROM regions")->fetchAll();
 
-// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $owner_id = $_SESSION['user_id'];  // Assuming user ID is stored in session after login
-    $land_title_no = $_POST['land_title_no'];
+    $owner_id = $_SESSION['user_id'];
+    $land_title_no = trim($_POST['land_title_no']);
     $land_size = $_POST['land_size'];
     $land_use = $_POST['land_use'];
     $region_name = $_POST['region_name'];
@@ -19,23 +17,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $longitude = $_POST['longitude'];
 
     try {
-        // Check for duplicate land title number
-        $checkStmt = $pdo->prepare("SELECT * FROM land_parcels WHERE land_title_no = ?");
-        $checkStmt->execute([$land_title_no]);
-        
-        if ($checkStmt->rowCount() > 0) {
+        // ✅ Step 1: Check if title number is assigned to the current user
+        $checkOwnership = $pdo->prepare("SELECT * FROM land_title_requests 
+                                         WHERE land_title_no = ? AND user_id = ? AND request_status = 'approved'");
+        $checkOwnership->execute([$land_title_no, $owner_id]);
+
+        if ($checkOwnership->rowCount() == 0) {
             echo "<script>
-                    alert('Error: A land title number already exists in the system.');
-                    window.history.back();  // Takes user back to the form
+                    alert('Error: This land title number is not assigned to your account or not approved yet.');
+                    window.history.back();
                   </script>";
             exit();
         }
-    
-        // Insert land registration into the database
-        $stmt = $pdo->prepare("INSERT INTO land_parcels (owner_id, land_title_no, land_size, land_use, region_name, district_name, ward_name, village_name, latitude, longitude)
-                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        // ✅ Step 2: Check if title number has already been used for a registration
+        $checkUsed = $pdo->prepare("SELECT * FROM land_parcels WHERE land_title_no = ?");
+        $checkUsed->execute([$land_title_no]);
+
+        if ($checkUsed->rowCount() > 0) {
+            echo "<script>
+                    alert('Error: This land title number has already been used for land registration.');
+                    window.history.back();
+                  </script>";
+            exit();
+        }
+
+        // ✅ Step 3: All checks passed, register land
+        $stmt = $pdo->prepare("INSERT INTO land_parcels 
+            (owner_id, land_title_no, land_size, land_use, region_name, district_name, ward_name, village_name, latitude, longitude) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([$owner_id, $land_title_no, $land_size, $land_use, $region_name, $district_name, $ward_name, $village_name, $latitude, $longitude]);
-    
+
         echo "<script>
                 alert('SUCCESSFUL INFORMATION SENT');
                 setTimeout(function(){
@@ -45,9 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } catch (PDOException $e) {
         echo "<script>alert('Database Error: " . $e->getMessage() . "');</script>";
     }
-    
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -56,9 +68,55 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register Land</title>
     <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../officials/styleofiicials.css"> <!-- External CSS -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+    
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h3 class="text-center text-white mt-3">Land System</h3>
+        <ul class="nav flex-column mt-4">
+            <li class="nav-item">
+                <a href="owner_dashboard.php" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="search_land.php" class="nav-link"><i class="fas fa-tasks"></i> search Land</a>
+            </li>
+            <li class="nav-item">
+                <a href="view_requests.php" class="nav-link"><i class="fas fa-chart-line"></i> View all Your Requested Land</a>
+            </li>
+            <li class="nav-item">
+                <a href="purchase_land.php" class="nav-link"><i class="fas fa-chart-line"></i> Purchase Land</a>
+            </li>
+            <li class="nav-item">
+            <a href="owner_approve_requests.php" class="nav-link"><i class="fas fa-chart-line"></i> Approve Requests</a>
+            </li>
+            <li class="nav-item">
+            <a href="owner_transfer_history.php" class="nav-link"><i class="fas fa-chart-line"></i> Transfer History</a>
+            </li>
+            <li class="nav-item">
+                <a href="../auth/logout.php" class="nav-link logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
+            <div class="container-fluid">
+                <h4 class="navbar-brand">Land Owner</h4>
+                <div class="ms-auto d-flex align-items-center">
+                    <span class="me-3">Welcome, <?= $_SESSION['first_name']; ?>!</span>
+                    <i class="fas fa-user-circle fa-2x text-primary"></i>
+                </div>
+            </div>
+        </nav>
     <div class="container">
         <h2 class="form-title">Register Your Land</h2>
         <form method="POST" action="register_land.php">
@@ -66,6 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="form-group">
                 <label for="land_title_no">Land Title Number:</label>
                 <input type="text" name="land_title_no" id="land_title_no" required>
+                <a href="land_title_requests.php">Click here to request land title No</a>
             </div>
 
             <!-- Land Size -->

@@ -7,14 +7,12 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'buyer') {
     exit();
 }
 
-require '../config/db.php'; // Ensure database connection
-
 // Check if form was submitted via POST
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['make_payment'])) {
-    // Get the land details and price from the form
     $land_id = $_POST['land_id'];
     $price = $_POST['price'];
-    $user_id = $_SESSION['user_id'];
+    $user_id = $_SESSION['user_id']; // This is the payer_id
+    $amount = $price; // Assign the price to amount
 
     // Remove expired control numbers (older than 3 hours)
     $stmt = $pdo->prepare("DELETE FROM payments WHERE payment_status = 'pending' AND payment_date < NOW() - INTERVAL 3 HOUR");
@@ -34,10 +32,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['make_payment'])) {
         // Generate a new control number
         $transaction_id = generateUniqueControlNumber($pdo);
 
-        // Insert payment record into the database
-        $stmt = $pdo->prepare("INSERT INTO payments (payer_id, land_id, amount, transaction_id, payment_status, payment_date) 
-                               VALUES (?, ?, ?, ?, ?, NOW())");
-        $stmt->execute([$user_id, $land_id, $price, $transaction_id, 'pending']);
+        // 🔍 Get matching transfer_id from land_transfers
+        $stmt = $pdo->prepare("SELECT transfer_id FROM land_transfers 
+                               WHERE buyer_id = ? AND land_id = ? AND transfer_status = 'Pending'");
+        $stmt->execute([$user_id, $land_id]);
+        $transferRow = $stmt->fetch(PDO::FETCH_ASSOC);
+        $transfer_id = $transferRow ? $transferRow['transfer_id'] : null;
+
+        // 💾 Insert payment
+        $insertPayment = $pdo->prepare("
+            INSERT INTO payments (payer_id, land_id, amount, payment_type, transaction_id, payment_status, transfer_id) 
+            VALUES (?, ?, ?, 'Transfer', ?, 'Completed', ?)
+        ");
+        $insertPayment->execute([$user_id, $land_id, $amount, $transaction_id, $transfer_id]);
     }
 
     // Fetch buyer's email
@@ -51,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['make_payment'])) {
 
     $buyer_email = $user['email'];
 
-    // Send Control Number to User's Email
+    // Send control number to user's email
     $subject = "Your Payment Control Number";
     $message = "Dear Buyer,\n\nYour control number for the land purchase is: $transaction_id.\n\nUse this number to complete your payment via mobile money or bank.\n\nThis control number is valid for 3 hours.\n\nThank you!\n\nLand System Team";
     $headers = "From: no-reply@land-system.com\r\n";
@@ -69,13 +76,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['make_payment'])) {
 function generateUniqueControlNumber($pdo) {
     do {
         $transaction_id = mt_rand(1000000000, 9999999999);
-
-        // Check if the number already exists in the database
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM payments WHERE transaction_id = ?");
         $stmt->execute([$transaction_id]);
         $exists = $stmt->fetchColumn();
-    } while ($exists > 0); // Keep generating if the number already exists
-
+    } while ($exists > 0);
     return $transaction_id;
 }
 ?>
+

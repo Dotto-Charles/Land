@@ -14,6 +14,7 @@ body {
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
 }
 
 h2.form-title {
@@ -78,4 +79,28 @@ input:focus, select:focus {
         font-size: 20px;
     }
 }
+
+.result table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.result th {
+    background-color: #f2f2f2;
+    text-align: left;
+    width: 30%;
+    padding: 8px;
+}
+
+.result td {
+    padding: 8px;
+    background-color: #fff;
+}
+
+.result tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+
 

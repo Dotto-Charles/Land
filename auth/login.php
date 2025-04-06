@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         header("Location: ../buyer/buyer_dashboard.php");
                     } 
                     else {
-                        header('Location: aaaaa.php'); // Redirect to the appropriate location
+                        header('Location: ../surveyor/approve_title_requests.php'); // Redirect to the appropriate location
                     }
                     exit(); // Ensure script stops execution after redirection
                 } else {

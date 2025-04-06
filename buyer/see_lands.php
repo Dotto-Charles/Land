@@ -2,7 +2,7 @@
 include_once '../config/db.php';
 session_start();
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'buyer') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'buyer' ) {
     header("Location: ..auth/login.php");
     exit();
 }
@@ -22,6 +22,8 @@ $lands = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Available Lands for Sale</title>
     <link rel="stylesheet" href="seelands.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
 </head>
 <body>
 
@@ -38,6 +40,15 @@ $lands = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <!-- Main Content -->
     <div class="main-content">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
+            <div class="container-fluid">
+                <h4 class="navbar-brand">Buyer Dashboard</h4>
+                <div class="ms-auto d-flex align-items-center">
+                    <span class="me-3">Welcome, <?= $_SESSION['first_name']; ?>!</span>
+                    <i class="fas fa-user-circle fa-2x text-primary"></i>
+                </div>
+            </div>
+        </nav>
         <header>
             <h2>Available Lands for Sale</h2>
         </header>

@@ -143,3 +143,12 @@ CREATE TABLE villages (
     FOREIGN KEY (ward_id) REFERENCES wards(ward_id) ON DELETE CASCADE
 );
 
+
+CREATE TABLE land_title_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    land_title_no VARCHAR(100) DEFAULT NULL,
+    request_status ENUM('pending', 'approved') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
