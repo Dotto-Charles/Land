@@ -1,26 +1,40 @@
 <?php
-include_once '../config/db.php';
 session_start();
+require_once '../config/db.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'landowner') {
+// Redirect if not logged in
+if (!isset($_SESSION['user_id'])) {
     header("Location: ../auth/login.php");
     exit();
 }
+
+$user_id = $_SESSION['user_id'];
+
+// Fetch all lands that belong to the logged-in user
+$stmt = $pdo->prepare("SELECT * FROM land_parcels WHERE owner_id = ?");
+$stmt->execute([$user_id]);
+$lands = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landowner Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <title>My Lands</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../officials/styleofiicials.css"> <!-- External CSS -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        form { margin-bottom: 30px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #aaa; padding: 8px; text-align: center; }
+        th { background-color: #f4f4f4; }
+        button { padding: 10px 15px; }
+        .msg { color: green; margin-bottom: 10px; }
+    </style>
 </head>
 <body>
+
 <div class="d-flex">
     <!-- Sidebar -->
     <div class="sidebar">
@@ -48,9 +62,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'landowner') {
             <a href="owner_transfer_history.php" class="nav-link"><i class="fas fa-chart-line"></i> Transfer History</a>
             </li> <li class="nav-item">
             <a href="../buyer/see_lands.php" class="nav-link"><i class="fas fa-chart-line"></i> Buy Land</a>
-            </li>
-            <a href="my_lands.php" class="nav-link"><i class="fas fa-chart-line"></i> View Your Land</a>
-            </li>
+            </li> 
+            
             <li class="nav-item">
                 <a href="../auth/logout.php" class="nav-link logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </li>
@@ -62,7 +75,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'landowner') {
         <!-- Top Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
             <div class="container-fluid">
-                <h4 class="navbar-brand">Land Owner</h4>
+                <h4 class="navbar-brand">Owner Dashboard</h4>
                 <div class="ms-auto d-flex align-items-center">
                     <span class="me-3">Welcome, <?= $_SESSION['first_name']; ?>!</span>
                     <i class="fas fa-user-circle fa-2x text-primary"></i>
@@ -70,38 +83,40 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'landowner') {
             </div>
         </nav>
 
+<div class="main-content">
+    <h2>All Lands Owned by You</h2>
 
-            <section class="dashboard-features">
-                <div class="feature-card">
-                    <a href="register_land.php">
-                        <img src="../icons/register.png" alt="Register Land">
-                        <h3>Register Land</h3>
-                    </a>
-                </div>
-                
-                <div class="feature-card">
-                    <a href="search_land.php">
-                        <img src="../icons/search.png" alt="Search Land">
-                        <h3>Search Land</h3>
-                    </a>
-                </div>
+    <?php if (count($lands) > 0): ?>
+        <table border="1" cellpadding="10">
+            <tr>
+                <th>Title No</th>
+                <th>Size (Acres)</th>
+                <th>Latitude</th>
+                <th>Longtude</th>
+                <th>Region</th>
+                <th>District</th>
+                <th>Ward</th>
+                <th>Street/Village</th>
+                <th>Status</th>
+            </tr>
+            <?php foreach ($lands as $land): ?>
+                <tr>
+                    <td><?= htmlspecialchars($land['land_title_no']) ?></td>
+                    <td><?= htmlspecialchars($land['land_size']) ?></td>
+                    <td><?= htmlspecialchars($land['latitude']) ?></td>
+                    <td><?= htmlspecialchars($land['longitude']) ?></td>
+                    <td><?= htmlspecialchars($land['region_name']) ?></td>
+                    <td><?= htmlspecialchars($land['district_name']) ?></td>
+                    <td><?= htmlspecialchars($land['ward_name']) ?></td>
+                    <td><?= htmlspecialchars($land['village_name']) ?></td>
+                    <td><?= htmlspecialchars($land['registration_status']) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php else: ?>
+        <p>You currently have no registered lands.</p>
+    <?php endif; ?>
+</div>
 
-                <div class="feature-card">
-                    <a href="view_requests.php">
-                        <img src="../icons/requests.png" alt="View Requests">
-                        <h3>View All Your Requested Land</h3>
-                    </a>
-                </div>
-
-                <div class="feature-card">
-                    <a href="purchase_land.php">
-                        <img src="../icons/sell.png" alt="Sell Land">
-                        <h3>Sell Land</h3>
-                    </a>
-                </div>
-                
-            </section>
-        </main>
-    </div>
 </body>
 </html>
