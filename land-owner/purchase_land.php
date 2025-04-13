@@ -6,7 +6,7 @@ $message = "";
 $land = null;
 
 // Ensure user is logged in
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'landowner') {
+if (!isset($_SESSION['user_id']) && ($_SESSION['role'] !== 'landowner' || $_SESSION['role'] !== 'buyer')) {
     header("Location: ../auth/login.php");
     exit();
 }
@@ -18,13 +18,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search_land'])) {
     $land_title_no = trim($_POST['land_title_no']);
 
     // Fetch land details including all required fields
-    $stmt = $pdo->prepare("SELECT * FROM land_parcels WHERE land_title_no = ? AND owner_id = ?");
+    // Ensure land exists, belongs to user, and is approved
+$stmt = $pdo->prepare("SELECT * FROM land_parcels WHERE land_title_no = ? AND owner_id = ? AND registration_status = 'Approved'");
+
     $stmt->execute([$land_title_no, $user_id]);
     $land = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$land) {
-        $message = "Land not found! Please enter a valid title number.";
+        $message = "This land either does not belong to you or has not yet been approved for transactions.";
     }
+    
 }
 
 // Handle purchase transaction
@@ -108,8 +111,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['purchase_land'])) {
             </form>
 
             <?php if ($message): ?>
-                <p style="color: green;"> <?= $message; ?> </p>
-            <?php endif; ?>
+    <p style="color: red;"> <?= $message; ?> </p>
+     <?php endif; ?>
+
 
             <?php if (!empty($land)): ?>
                 <h2>Land Details</h2>

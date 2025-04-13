@@ -17,11 +17,10 @@ if (!$payment) {
     die("Payment record not found.");
 }
 
-// Update the payment status to 'paid' and add the payment method (mobile)
+// Update the payment status to 'paid' and set payment_type
 $stmt = $pdo->prepare("UPDATE payments SET payment_status = ?, payment_type = ? WHERE transaction_id = ?");
-$stmt->execute(['paid', 'Mobile (MPesa)', $transaction_id]);
+$stmt->execute(['paid', 'MOBILE', $transaction_id]); // Change 'Registration' if needed
 
-// Redirect to a confirmation page or display success message
 header("Location: payment_confirmation.php?transaction_id=" . $transaction_id);
 exit();
-
+?>

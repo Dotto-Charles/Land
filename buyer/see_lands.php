@@ -2,7 +2,7 @@
 include_once '../config/db.php';
 session_start();
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'buyer' ) {
+if (!isset($_SESSION['user_id']) && ($_SESSION['role'] !== 'buyer' || $_SESSION['role'] !== 'landowner')) {
     header("Location: ..auth/login.php");
     exit();
 }

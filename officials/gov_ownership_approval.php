@@ -54,11 +54,12 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= number_format($row['amount'], 2) ?> TZS</td>
                     <td><?= htmlspecialchars($row['transaction_id']) ?></td>
                     <td>
-                        <form method="POST" action="process_gov_approval.php">
-                            <input type="hidden" name="land_id" value="<?= $row['land_id'] ?>">
-                            <input type="hidden" name="new_owner_id" value="<?= $row['payer_id'] ?>">
-                            <button type="submit" name="approve">Finalize Transfer</button>
-                        </form>
+                    <form method="POST" action="process_gov_approval.php">
+    <input type="hidden" name="land_id" value="<?= $row['land_id'] ?>">
+    <input type="hidden" name="new_owner_id" value="<?= $row['payer_id'] ?>">
+    <button type="submit" name="approve">Finalize Transfer</button>
+</form>
+
                     </td>
                 </tr>
             <?php endforeach; ?>

@@ -36,6 +36,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'buyer') {
                 <a href="view_reports.php" class="nav-link"><i class="fas fa-chart-line"></i> View Reports</a>
             </li>
             <li class="nav-item">
+                <a href="../land-owner/purchase_land.php" class="nav-link"><i class="fas fa-chart-line"></i> Purchase Land</a>
+            </li>
+            <li class="nav-item">
                 <a href="../auth/logout.php" class="nav-link logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </li>
         </ul>
