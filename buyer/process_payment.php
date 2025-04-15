@@ -58,11 +58,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['make_payment'])) {
         }
 
         // ✅ Insert payment record
-        $stmt = $pdo->prepare("
-            INSERT INTO payments (payer_id, land_id, amount, payment_type, transaction_id, payment_status, transfer_id, payment_date) 
-            VALUES (?, ?, ?, 'Mobile', ?, 'pending', ?, NOW())
-        ");
-        $stmt->execute([$user_id, $land_id, $amount, $transaction_id, $transfer_id]);
+        try {
+            $stmt = $pdo->prepare("
+                INSERT INTO payments (payer_id, land_id, amount, payment_type, transaction_id, payment_status, transfer_id, payment_date) 
+                VALUES (?, ?, ?, 'Mobile', ?, 'pending', ?, NOW())
+            ");
+            $stmt->execute([$user_id, $land_id, $amount, $transaction_id, $transfer_id]);
+        } catch (PDOException $e) {
+            echo "Insert failed: " . $e->getMessage();
+            exit();
+        }
+        
     }
 
     // ✅ Send control number to buyer's email

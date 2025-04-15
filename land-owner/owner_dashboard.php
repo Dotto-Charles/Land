@@ -64,44 +64,57 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'landowner') {
             <div class="container-fluid">
                 <h4 class="navbar-brand">Land Owner</h4>
                 <div class="ms-auto d-flex align-items-center">
-                    <span class="me-3">Welcome, <?= $_SESSION['first_name']; ?>!</span>
+                <span class="me-3">Welcome, <?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?>!</span>
+
                     <i class="fas fa-user-circle fa-2x text-primary"></i>
                 </div>
             </div>
         </nav>
 
-
-            <section class="dashboard-features">
-                <div class="feature-card">
-                    <a href="register_land.php">
+<!-- Dashboard Content -->
+<div class="container mt-4">
+            <div class="row">
+                <!-- Verify Land -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
                         <img src="../icons/register.png" alt="Register Land">
-                        <h3>Register Land</h3>
-                    </a>
-                </div>
-                
-                <div class="feature-card">
-                    <a href="search_land.php">
-                        <img src="../icons/search.png" alt="Search Land">
-                        <h3>Search Land</h3>
-                    </a>
+                            <h5><a href="register_land.php">Register Land</a></h5>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="feature-card">
-                    <a href="view_requests.php">
-                        <img src="../icons/requests.png" alt="View Requests">
-                        <h3>View All Your Requested Land</h3>
-                    </a>
-                </div>
-
-                <div class="feature-card">
-                    <a href="purchase_land.php">
-                        <img src="../icons/sell.png" alt="Sell Land">
-                        <h3>Sell Land</h3>
-                    </a>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <img src="../icons/search.png" class="icon-img" alt="Search Land">
+                            <h5><a href="search_land.php">Search Land</a></h5>
+                        </div>
+                    </div>
                 </div>
                 
-            </section>
-        </main>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <img src="../icons/requests.png" class="icon-img" alt="Requests">
+                            <h5><a href="view_requests.php">View All Your Requested Land</a></h5>
+                        </div>
+                    </div>
+                </div>
+
+
+             <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <img src="../icons/sell.png" class="icon-img" alt="Sell">
+                            <h5><a href="purchase_land.php">Sell Land</a></h5>
+                        </div>
+                    </div>
+                </div>          
+        
+           </div>
+        </div>
+      </div>
     </div>
 </body>
 </html>

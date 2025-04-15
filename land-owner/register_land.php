@@ -112,7 +112,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="container-fluid">
                 <h4 class="navbar-brand">Land Owner</h4>
                 <div class="ms-auto d-flex align-items-center">
-                    <span class="me-3">Welcome, <?= $_SESSION['first_name']; ?>!</span>
+                <span class="me-3">Welcome, <?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?>!</span>
+
                     <i class="fas fa-user-circle fa-2x text-primary"></i>
                 </div>
             </div>

@@ -10,8 +10,9 @@ if (!isset($_SESSION['user_id']) && ($_SESSION['role'] !== 'buyer' || $_SESSION[
 $user_id = $_SESSION['user_id']; // Logged-in user ID
 
 // Fetch all land parcels with status 'sell' and approved
-$stmt = $pdo->prepare("SELECT * FROM land_parcels WHERE status = 'Sell' AND registration_status = 'Approved'");
-$stmt->execute();
+$stmt = $pdo->prepare("SELECT * FROM land_parcels WHERE status = 'Sell' AND registration_status = 'Approved' AND owner_id != ?");
+$stmt->execute([$user_id]);
+
 $lands = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>

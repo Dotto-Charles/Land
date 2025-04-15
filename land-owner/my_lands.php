@@ -77,7 +77,8 @@ $lands = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="container-fluid">
                 <h4 class="navbar-brand">Owner Dashboard</h4>
                 <div class="ms-auto d-flex align-items-center">
-                    <span class="me-3">Welcome, <?= $_SESSION['first_name']; ?>!</span>
+                <span class="me-3">Welcome, <?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?>!</span>
+
                     <i class="fas fa-user-circle fa-2x text-primary"></i>
                 </div>
             </div>

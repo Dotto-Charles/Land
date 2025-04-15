@@ -26,16 +26,59 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <title>Government Approval</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styleofiicials.css"> <!-- External CSS -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        form { margin-bottom: 30px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #aaa; padding: 8px; text-align: center; }
+        th { background-color: #f4f4f4; }
+        
+    </style>
 </head>
 <body>
+<div class="d-flex">
+    <!-- Sidebar -->
     <div class="sidebar">
-        <h2>Government Panel</h2>
-        <ul>
-            <li><a href="officials_dashboard.php">Dashboard</a></li>
-            <li><a href="gov_approval_requests.php">Approval Requests</a></li>
-            <li><a href="../auth/logout.php">Logout</a></li>
+        <h3 class="text-center text-white mt-3">Land SYSTEM</h3>
+        <ul class="nav flex-column mt-4">
+            <li class="nav-item">
+                <a href="officials_dashboard.php" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a href="verify_land.php" class="nav-link"><i class="fas fa-check-circle"></i> Verify Land</a>
+            </li>
+            <li class="nav-item">
+                <a href="gov_ownership_approval.php" class="nav-link"><i class="fas fa-tasks"></i> Manage Requests</a>
+            </li>
+            <li class="nav-item">
+                <a href="gov_transfer_history.php" class="nav-link"><i class="fas fa-chart-line"></i> Land Transfer History</a>
+            </li>
+            <li class="nav-item">
+                <a href="../land-owner/search_land.php" class="nav-link"><i class="fas fa-chart-line"></i> Search Land</a>
+            </li>
+            <li class="nav-item">
+                <a href="../auth/logout.php" class="nav-link logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </li>
         </ul>
     </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
+            <div class="container-fluid">
+                <h4 class="navbar-brand">Officials Dashboard</h4>
+                <div class="ms-auto d-flex align-items-center">
+                    <span class="me-3">Welcome, <?= $_SESSION['first_name']; ?>!</span>
+                    <i class="fas fa-user-circle fa-2x text-primary"></i>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mt-4">
+            <div class="row">
 
     <div class="main-content">
         <h2>Pending Land Ownership Transfers</h2>
@@ -65,5 +108,9 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php endforeach; ?>
         </table>
     </div>
+            </div>
+            </div>
+        </div>
+
 </body>
 </html>

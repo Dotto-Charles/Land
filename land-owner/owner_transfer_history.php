@@ -10,18 +10,19 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'landowner') {
 $owner_id = $_SESSION['user_id'];
 
 $stmt = $pdo->prepare("
-    SELECT p.*, u.first_name AS buyer_name, l.land_title_no, l.land_size, l.price
+    SELECT p.*, CONCAT(u.first_name, ' ', u.last_name) AS buyer_name, l.land_title_no, l.land_size, l.price
     FROM payments p
     JOIN land_parcels l ON p.land_id = l.land_id
     JOIN users u ON p.payer_id = u.user_id
-    WHERE l.owner_id = ? 
+    JOIN land_transfers t ON p.transfer_id = t.transfer_id
+    WHERE t.seller_id = ? 
     AND p.payment_status = 'paid' 
-    AND l.gov_approval_status = 'approved'
+    AND t.transfer_status = 'Approved'
     ORDER BY p.payment_id DESC
 ");
 $stmt->execute([$owner_id]);
-
 $transfers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!DOCTYPE html>
@@ -80,7 +81,8 @@ $transfers = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="container-fluid">
                 <h4 class="navbar-brand">Land Owner</h4>
                 <div class="ms-auto d-flex align-items-center">
-                    <span class="me-3">Welcome, <?= $_SESSION['first_name']; ?>!</span>
+                <span class="me-3">Welcome, <?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?>!</span>
+
                     <i class="fas fa-user-circle fa-2x text-primary"></i>
                 </div>
             </div>
@@ -94,7 +96,7 @@ $transfers = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <th>Size (Acres)</th>
             <th>Price (TZS)</th>
             <th>New Buyer</th>
-            <th>Transaction ID</th>
+            <th>Control No</th>
         </tr>
         <?php foreach ($transfers as $t): ?>
             <tr>

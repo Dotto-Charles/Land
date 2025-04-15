@@ -30,10 +30,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'government_official')
                 <a href="verify_land.php" class="nav-link"><i class="fas fa-check-circle"></i> Verify Land</a>
             </li>
             <li class="nav-item">
-                <a href="manage_requests.php" class="nav-link"><i class="fas fa-tasks"></i> Manage Requests</a>
+                <a href="gov_ownership_approval.php" class="nav-link"><i class="fas fa-tasks"></i> Manage Requests</a>
             </li>
             <li class="nav-item">
                 <a href="gov_transfer_history.php" class="nav-link"><i class="fas fa-chart-line"></i> Land Transfer History</a>
+            </li>
+            <li class="nav-item">
+                <a href="../land-owner/search_land.php" class="nav-link"><i class="fas fa-chart-line"></i> Search Land</a>
             </li>
             <li class="nav-item">
                 <a href="../auth/logout.php" class="nav-link logout"><i class="fas fa-sign-out-alt"></i> Logout</a>

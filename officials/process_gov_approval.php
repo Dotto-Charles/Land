@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['land_id']) && isset($
     if (!$land) {
         die("Land record not found.");
     }
-    $price=$land['sale_price'];
+    $price=$land['price'];
     $old_owner_id = $land['owner_id'];
 
     // Step 2: Get the matching transfer request
@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['land_id']) && isset($
     $transfer_id = $transfer ? $transfer['transfer_id'] : null;
 
     // Step 3: Update land owner & approval status
-    $stmt = $pdo->prepare("UPDATE land_parcels SET owner_id = ?, gov_approval_status = 'approved' WHERE land_id = ?");
+    $stmt = $pdo->prepare("UPDATE land_parcels SET owner_id = ?, gov_approval_status = 'approved', status='Not_sell' WHERE land_id = ?");
     $stmt->execute([$new_owner_id, $land_id]);
 
     // Step 4: Update payment record with approval info

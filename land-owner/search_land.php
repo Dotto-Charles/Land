@@ -43,27 +43,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Search Land</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        .back-btn {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    text-align: center;
-    margin: 10px;
+.back-btn {
     display: inline-block;
+    padding: 8px 20px;
+    background-color: #2e7d32; /* Dark green */
+    color: white;
     text-decoration: none;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
 }
 
 .back-btn:hover {
-    background-color: #45a049;
+    background-color: #1b5e20; /* Darker green on hover */
 }
-    </style>
+</style>
+
 </head>
 <body>
     <div class="container">
-    <a href="owner_dashboard.php" class="back-btn">Back</a> 
+    <a href="javascript:history.back()" class="back-btn">Back</a>
+
         <h2>Search Land</h2>
         <form method="POST">
             <input type="text" name="land_title_no" placeholder="Enter Land Title Number" required>
