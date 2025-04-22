@@ -51,7 +51,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'government_official')
             <div class="container-fluid">
                 <h4 class="navbar-brand">Officials Dashboard</h4>
                 <div class="ms-auto d-flex align-items-center">
-                    <span class="me-3">Welcome, <?= $_SESSION['first_name']; ?>!</span>
+                <span class="me-3">Welcome, <?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?>!</span>
                     <i class="fas fa-user-circle fa-2x text-primary"></i>
                 </div>
             </div>
