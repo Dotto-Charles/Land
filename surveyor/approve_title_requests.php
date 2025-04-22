@@ -54,16 +54,41 @@ $requests = $stmt->fetchAll();
 <html>
 <head>
     <title>Surveyor Approval Panel</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
         body { font-family: Arial; background: #f4f4f4; padding: 20px; }
         table { border-collapse: collapse; width: 100%; background: white; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4; }
         .btn { background: green; color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; }
         h2 { margin-bottom: 20px; }
         .message { background: #c7f0c4; padding: 10px; margin-bottom: 20px; border-left: 5px solid green; }
+
+        form { margin-bottom: 30px; }
+
+        .back-btn {
+    display: inline-block; padding: 8px 20px; background-color: #2e7d32; /* Dark green */ color: white; text-decoration: none;
+    border: none; border-radius: 4px;font-weight: bold;text-align: center;box-shadow: 0 2px 4px rgba(0,0,0,0.1);margin-bottom: 15px;
+}
+
+.back-btn:hover { background-color: #1b5e20; /* Darker green on hover */}
+
     </style>
 </head>
 <body>
+
+<div class="content">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
+            <div class="container-fluid">
+                <h4 class="navbar-brand">Surveyor Dashboard</h4>
+                <div class="ms-auto d-flex align-items-center">
+                    <span class="me-3">Welcome, <?= $_SESSION['first_name']; ?>!</span>
+                    <i class="fas fa-user-circle fa-2x text-primary"></i>
+                </div>
+            </div>
+        </nav>
+        <a href="javascript:history.back()" class="back-btn">Back</a>
 
 <h2>Pending Land Title Number Requests</h2>
 
@@ -95,6 +120,6 @@ $requests = $stmt->fetchAll();
 <?php else: ?>
     <p>No pending title requests.</p>
 <?php endif; ?>
-
+</div>
 </body>
 </html>

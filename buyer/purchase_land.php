@@ -6,7 +6,7 @@ $message = "";
 $land = null;
 
 // Ensure user is logged in
-if (!isset($_SESSION['user_id']) && ($_SESSION['role'] !== 'landowner' || $_SESSION['role'] !== 'buyer')) {
+if (!isset($_SESSION['user_id'])|| $_SESSION['role'] !== 'buyer') {
     header("Location: ../auth/login.php");
     exit();
 }
@@ -53,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['purchase_land'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purchase Land</title>
-    <link rel="stylesheet" href="stylepurchase.css">
+    <link rel="stylesheet" href="../land-owner/stylepurchase.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../officials/styleofiicials.css"> <!-- External CSS -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
@@ -66,23 +66,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['purchase_land'])) {
         <h3 class="text-center text-white mt-3">Land System</h3>
         <ul class="nav flex-column mt-4">
             <li class="nav-item">
-                <a href="owner_dashboard.php" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="buyer_dashboard.php" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
             </li>
             <li class="nav-item">
-                <a href="register_land.php" class="nav-link"><i class="fas fa-check-circle"></i> Register Land</a>
+                <a href="see_lands.php" class="nav-link"><i class="fas fa-check-circle"></i> See Lands</a>
             </li>
             <li class="nav-item">
-                <a href="search_land.php" class="nav-link"><i class="fas fa-tasks"></i> search Land</a>
+                <a href="../land-owner/search_land.php" class="nav-link"><i class="fas fa-tasks"></i> search Land</a>
             </li>
             <li class="nav-item">
-                <a href="view_requests.php" class="nav-link"><i class="fas fa-chart-line"></i> View all Your Requested Land</a>
+                <a href="my_lands.php" class="nav-link"><i class="fas fa-chart-line"></i> My Lands</a>
             </li>
             
             <li class="nav-item">
-            <a href="owner_approve_requests.php" class="nav-link"><i class="fas fa-chart-line"></i> Approve Requests</a>
-            </li>
-            <li class="nav-item">
-            <a href="owner_transfer_history.php" class="nav-link"><i class="fas fa-chart-line"></i> Transfer History</a>
+            <a href="buyer_transfer_history.php" class="nav-link"><i class="fas fa-chart-line"></i> Transfer History</a>
             </li>
             <li class="nav-item">
                 <a href="../auth/logout.php" class="nav-link logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -104,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['purchase_land'])) {
             </div>
         </nav>
 
-     <!--   <div class="content">  -->
+        <!--   <div class="content">  -->
             <form method="POST" action="">
                 <label>Enter Land Title Number:</label>
                 <input type="text" name="land_title_no" required>

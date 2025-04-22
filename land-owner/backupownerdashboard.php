@@ -2,46 +2,23 @@
 include_once '../config/db.php';
 session_start();
 
-if (!isset($_SESSION['user_id']) && ($_SESSION['role'] !== 'buyer' || $_SESSION['role'] !== 'landowner')) {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'landowner') {
     header("Location: ../auth/login.php");
     exit();
 }
-
-$owner_id = $_SESSION['user_id'];
-
-$stmt = $pdo->prepare("
-    SELECT p.*, CONCAT(u.first_name, ' ', u.last_name) AS buyer_name, l.land_title_no, l.land_size, l.price
-    FROM payments p
-    JOIN land_parcels l ON p.land_id = l.land_id
-    JOIN users u ON p.payer_id = u.user_id
-    JOIN land_transfers t ON p.transfer_id = t.transfer_id
-    WHERE t.seller_id = ? 
-    AND p.payment_status = 'paid' 
-    AND t.transfer_status = 'Approved'
-    ORDER BY p.payment_id DESC
-");
-$stmt->execute([$owner_id]);
-$transfers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Transfer History</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landowner Dashboard</title>
+   <!--  <link rel="stylesheet" href="style.css">   -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../officials/styleofiicials.css"> <!-- External CSS -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        form { margin-bottom: 30px; }
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #aaa; padding: 8px; text-align: center; }
-        th { background-color: #f4f4f4; }
-        button { padding: 10px 15px; }
-        .msg { color: green; margin-bottom: 10px; }
-    </style>
 </head>
 <body>
 <div class="d-flex">
@@ -67,7 +44,13 @@ $transfers = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <li class="nav-item">
             <a href="owner_approve_requests.php" class="nav-link"><i class="fas fa-chart-line"></i> Approve Requests</a>
             </li>
-            
+            <li class="nav-item">
+            <a href="owner_transfer_history.php" class="nav-link"><i class="fas fa-chart-line"></i> Transfer History</a>
+            </li> <li class="nav-item">
+            <a href="../buyer/see_lands.php" class="nav-link"><i class="fas fa-chart-line"></i> Buy Land</a>
+            </li>
+            <a href="my_lands.php" class="nav-link"><i class="fas fa-chart-line"></i> View Your Land</a>
+            </li>
             <li class="nav-item">
                 <a href="../auth/logout.php" class="nav-link logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </li>
@@ -88,26 +71,43 @@ $transfers = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </nav>
 
-<div class="main-content">
-    <h2>Land Transfers You Approved</h2>
-    <table border="1" cellpadding="10">
-        <tr>
-            <th>Land Title No</th>
-            <th>Size (Acres)</th>
-            <th>Price (TZS)</th>
-            <th>New Buyer</th>
-            <th>Control No</th>
-        </tr>
-        <?php foreach ($transfers as $t): ?>
-            <tr>
-                <td><?= htmlspecialchars($t['land_title_no']) ?></td>
-                <td><?= $t['land_size'] ?></td>
-                <td><?= number_format($t['amount']) ?></td>
-                <td><?= htmlspecialchars($t['buyer_name']) ?></td>
-                <td><?= htmlspecialchars($t['transaction_id']) ?></td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
-</div>
+<!-- Dashboard Content -->
+<div class="container mt-4">
+            <div class="row">
+                <!-- Verify Land -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                        <img src="../icons/register.png" alt="Register Land">
+                            <h5><a href="register_land.php">Register Land</a></h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <img src="../icons/search.png" class="icon-img" alt="Search Land">
+                            <h5><a href="search_land.php">Search Land</a></h5>
+                        </div>
+                    </div>
+                </div>
+                
+             
+
+
+             <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <img src="../icons/sell.png" class="icon-img" alt="Sell">
+                            <h5><a href="purchase_land.php">Sell Land</a></h5>
+                        </div>
+                    </div>
+                </div>          
+        
+           </div>
+        </div>
+      </div>
+    </div>
 </body>
 </html>

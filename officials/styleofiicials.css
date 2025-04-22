@@ -39,6 +39,7 @@
     font-weight: bold;
 }
 
+
 /* Card Styling */
 .card {
     border-radius: 10px;
@@ -92,4 +93,28 @@
     color: #1d3557;
     font-size: 18px;
     font-weight: bold;
+}
+
+.sidebar {
+    height: 100vh; /* Full viewport height */
+    overflow-y: auto; /* Enable vertical scroll if needed */
+    background-color: #343a40; /* Or your preferred background */
+    padding: 20px 0;
+    width: 250px;
+    position: fixed; /* Keep it always visible */
+}
+
+.nav-link {
+    color: white;
+    padding: 10px 20px;
+}
+
+.nav-link:hover {
+    background-color: #495057;
+    color: #fff;
+    text-decoration: none;
+}
+
+.logout {
+    color: #ff4d4d !important;
 }
