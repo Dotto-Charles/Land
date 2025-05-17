@@ -33,96 +33,74 @@ $transfers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>My Land Transfer History</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../officials/styleofiicials.css"> <!-- External CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+     <link rel="stylesheet" href="../land-owner/style.css">
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f8f9fa;
-        }
 
-        .sidebar {
-            width: 260px;
-            height: 100vh;
-            background: #2c3e50;
-            padding-top: 20px;
-            position: fixed;
-            top: 0;
-            left: 0;
-        }
-
-        .sidebar h3 {
-            font-weight: bold;
-        }
-
-        .nav-link {
-            color: #fff;
-            font-size: 18px;
-            padding: 15px;
-            display: block;
-            transition: 0.3s;
-        }
-
-        .nav-link i {
-            margin-right: 10px;
-        }
-
-        .nav-link:hover, .logout {
-            background: #1a252f;
-            color: #e74c3c;
-        }
-
-        .main-content {
-            margin-left: 260px; /* Leave space for sidebar */
-            padding: 30px;
-        }
-
-        .table th {
-            background-color: #e9ecef;
-        }
-
-        .navbar {
-            margin-left: 260px;
-        }
     </style>
 </head>
 <body>
 
-<!-- Sidebar -->
-<div class="sidebar">
-    <h3 class="text-center text-white mt-3">Land System</h3>
-    <ul class="nav flex-column mt-4">
-        <li class="nav-item">
-            <a href="buyer_dashboard.php" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
-        </li>
-        <li class="nav-item">
-            <a href="see_lands.php" class="nav-link"><i class="fas fa-check-circle"></i> See Available Land</a>
-        </li>
-        <li class="nav-item">
-            <a href="buyer_transfer_history.php" class="nav-link active"><i class="fas fa-tasks"></i> Transfer History</a>
-        </li>
-        <li class="nav-item">
-            <a href="my_lands.php" class="nav-link"><i class="fas fa-chart-line"></i> Your Lands</a>
-        </li>
-        <li class="nav-item">
-            <a href="purchase_land.php" class="nav-link"><i class="fas fa-money-check-alt"></i> Purchase Land</a>
-        </li>
-        <li class="nav-item">
-            <a href="../auth/logout.php" class="nav-link logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </li>
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-profile">
+            <img src="../icons/profile.png" alt="Profile">
+            <h5><?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?></h5>
+            <p><i class="fas fa-circle text-success"></i> Online</p>
+        </div>
+        <ul class="nav flex-column mt-2">
+            <li class="nav-item">
+                <a href="buyer_dashboard.php" class="nav-link"><i class="fa fa-user"></i> Dashboard</a>
+            </li>
+        
+            <li class="nav-item">
+                <a href="search_land.php" class="nav-link"><i class="fas fa-search"></i> Search Land</a>
+            </li>
+            <li class="nav-item">
+                <a href="purchase_land.php" class="nav-link"><i class="fas fa-envelope-open-text"></i> Sell Land</a>
+            </li>
+            <li class="nav-item">
+                <a href="owner_approve_requests.php" class="nav-link"><i class="fas fa-thumbs-up"></i> Approve Requests</a>
+            </li>
+            <li class="nav-item">
+                <a href="buyer_transfer_history.php" class="nav-link"><i class="fas fa-history"></i> Transfer History</a>
+            </li>
+            <li class="nav-item">
+                <a href="see_lands.php" class="nav-link"><i class="fas fa-map"></i> Buy Land</a>
+            </li>
+            <li class="nav-item">
+                <a href="my_lands.php" class="nav-link"><i class="fas fa-globe"></i> View Your Land</a>
+            </li>
+            
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
+            <div class="container-fluid">
+                <h4 class="navbar-brand">Land Owner Dashboard</h4>
+                <div class="ms-auto d-flex align-items-center">
+                    <span class="me-3">Welcome, <?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?>!</span>
+                    <!-- User Dropdown -->
+<div class="dropdown">
+    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-user-circle fa-2x text-primary"></i>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+        <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
+        <li><a class="dropdown-item" href="change_password.php"><i class="fas fa-key me-2"></i>Change Password</a></li>
+        <li><a class="dropdown-item text-danger" href="../auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
     </ul>
 </div>
 
-<!-- Top Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
-    <div class="container-fluid">
-        <h4 class="navbar-brand">Buyer Panel</h4>
-        <div class="ms-auto d-flex align-items-center">
-            <span class="me-3">Welcome, <?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?>!</span>
-            <i class="fas fa-user-circle fa-2x text-primary"></i>
-        </div>
-    </div>
-</nav>
+                </div>
+            </div>
+        </nav>
 
 <!-- Main Content -->
 <div class="main-content">
@@ -157,6 +135,6 @@ $transfers = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <p class="text-muted">You have no land transfers approved yet.</p>
     <?php endif; ?>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

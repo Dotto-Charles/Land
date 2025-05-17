@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once '../config/db.php';  // Ensure correct path to database connection
+include_once '../config/db.php';  
 
 ?>
 
@@ -10,7 +10,7 @@ include_once '../config/db.php';  // Ensure correct path to database connection
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Registration</title>
-    <link rel="stylesheet" href="styleregister.css">  <!-- Link to external CSS -->
+    <link rel="stylesheet" href="styleregister.css"> 
 </head>
 <body>
     <div class="container">

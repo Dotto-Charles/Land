@@ -1,7 +1,7 @@
 
 <?php
 session_start();
-include_once '../config/db.php';  // Ensure this file exists and is correct
+include_once '../config/db.php';  
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $national_id = trim($_POST['national_id']);
