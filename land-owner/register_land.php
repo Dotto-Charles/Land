@@ -1,7 +1,11 @@
 <?php
 session_start();
 include_once '../config/db.php';
-
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'landowner') {
+    header("Location: ../auth/login.php");
+    exit();
+}
+include '../auth/get_user_picture.php'; // Load $pictureDataUrl here
 $regions = $pdo->query("SELECT * FROM regions")->fetchAll();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -79,14 +83,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <div class="d-flex">
     <!-- Sidebar -->
      <div class="sidebar">
-        <div class="sidebar-profile">
-            <img src="../icons/profile.png" alt="Profile">
-            <h5><?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?></h5>
-            <p><i class="fas fa-circle text-success"></i> Online</p>
-        </div>
+        
+     <div class="sidebar-profile text-center p-3">
+    <img src="<?= $pictureDataUrl ?>" alt="Profile Picture">
+    <h5><?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?></h5>
+    <p><i class="fas fa-circle text-success"></i> Online</p>
+</div>
+
         <ul class="nav flex-column mt-2">
             <li class="nav-item">
-                <a href="owner_dashboard.php" class="nav-link"><i class="fa fa-user"></i> Dashboard</a>
+                <a href="owner_dashboard.php" class="nav-link"><i class="fa fa-home"></i> Dashboard</a>
             </li>
             <li class="nav-item">
                 <a href="register_land.php" class="nav-link"><i class="fas fa-check-circle"></i> Register Land</a>

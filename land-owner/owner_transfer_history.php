@@ -1,7 +1,7 @@
 <?php
 include_once '../config/db.php';
 session_start();
-
+include '../auth/get_user_picture.php'; // Load $pictureDataUrl here
 if (!isset($_SESSION['user_id']) && ($_SESSION['role'] !== 'buyer' || $_SESSION['role'] !== 'landowner')) {
     header("Location: ../auth/login.php");
     exit();
@@ -42,6 +42,14 @@ $transfers = $stmt->fetchAll(PDO::FETCH_ASSOC);
         th { background-color: #f4f4f4; }
         button { padding: 10px 15px; }
         .msg { color: green; margin-bottom: 10px; }
+        .profile-pic-dropdown {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 2px solid #007bff;
+    }
+
     </style>
 </head>
 <body>
@@ -89,25 +97,26 @@ $transfers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="content">
         <!-- Top Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
-            <div class="container-fluid">
-                <h4 class="navbar-brand">Land Owner Dashboard</h4>
-                <div class="ms-auto d-flex align-items-center">
-                    <span class="me-3">Welcome, <?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?>!</span>
-                    <!-- User Dropdown -->
-<div class="dropdown">
-    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fas fa-user-circle fa-2x text-primary"></i>
-    </a>
-    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
-        <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
-        <li><a class="dropdown-item" href="change_password.php"><i class="fas fa-key me-2"></i>Change Password</a></li>
-        <li><a class="dropdown-item text-danger" href="../auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-    </ul>
-</div>
+    <div class="container-fluid">
+        <h4 class="navbar-brand">Register Land</h4>
+        <div class="ms-auto d-flex align-items-center">
+            <span class="me-3 text-primary fw-bold">
+                Welcome, <?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?>!
+            </span>
 
-                </div>
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="<?= $pictureDataUrl ?>" alt="User" class="profile-pic-dropdown">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
+                    <li><a class="dropdown-item" href="change_password.php"><i class="fas fa-key me-2"></i>Change Password</a></li>
+                    <li><a class="dropdown-item text-danger" href="../auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                </ul>
             </div>
-        </nav>
+        </div>
+    </div>
+</nav>
 
 <div class="main-content">
     <h2>Land Transfers You Approved</h2>

@@ -2,31 +2,33 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require '../vendor/autoload.php'; // Make sure PHPMailer is installed via Composer
+require '../vendor/autoload.php'; // Ensure PHPMailer is installed via Composer
 
 function sendEmail($to, $subject, $body) {
     $mail = new PHPMailer(true);
-    
+
     try {
-        // SMTP Configuration
+        // SMTP Configuration for Gmail
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';  // Change to your email provider
+        $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'tittocharles@gmail.com';  // Your email
-        $mail->Password = '2014';   // Your email password
+        $mail->Username = 'tittocharles@gmail.com'; // Replace with your Gmail address
+        $mail->Password = 'lagbaxrfcdgkndvm';   // Replace with your generated App Password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
-        // Email settings
+        // Email content
         $mail->setFrom('tittocharles@gmail.com', 'Land Registration Office');
-        $mail->addAddress($to);
+        $mail->addAddress($to); // Recipient
         $mail->isHTML(true);
         $mail->Subject = $subject;
-        $mail->Body = $body;
+        $mail->Body    = $body;
 
         $mail->send();
+        error_log("Email sent successfully to $to");
     } catch (Exception $e) {
-        error_log("Email sending failed: " . $mail->ErrorInfo);
+        echo "Email sending failed: " . $mail->ErrorInfo;
+
     }
 }
 ?>

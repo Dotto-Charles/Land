@@ -1,7 +1,7 @@
 <?php
 session_start();
 include_once '../config/db.php'; // Database connection
-
+include '../auth/get_user_picture.php'; // Load $pictureDataUrl here
 $message = "";
 $land = null;
 
@@ -59,16 +59,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['purchase_land'])) {
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+    .profile-pic-dropdown {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 2px solid #007bff;
+    }
+</style>
+
 </head>
 <body>
 <div class="d-flex">
     <!-- Sidebar -->
     <div class="sidebar">
-        <div class="sidebar-profile">
-            <img src="../icons/profile.png" alt="Profile">
-            <h5><?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?></h5>
-            <p><i class="fas fa-circle text-success"></i> Online</p>
-        </div>
+        <div class="sidebar-profile text-center p-3">
+    <img src="<?= $pictureDataUrl ?>" alt="Profile Picture">
+    <h5><?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?></h5>
+    <p><i class="fas fa-circle text-success"></i> Online</p>
+</div>
+
         <ul class="nav flex-column mt-2">
             <li class="nav-item">
                 <a href="owner_dashboard.php" class="nav-link"><i class="fa fa-user"></i> Dashboard</a>
@@ -83,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['purchase_land'])) {
                 <a href="view_requests.php" class="nav-link"><i class="fas fa-envelope-open-text"></i> Requested Lands</a>
             </li>
             <li class="nav-item">
-                <a href="purchase_land.php" class="nav-link"><i class="fas fa-dollar-sign"></i> Purchase Land</a>
+                <a href="purchase_land.php" class="nav-link"><i class="fas fa-dollar-sign"></i> Sell Land</a>
             </li>
             <li class="nav-item">
                 <a href="owner_approve_requests.php" class="nav-link"><i class="fas fa-thumbs-up"></i> Approve Requests</a>
@@ -105,25 +116,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['purchase_land'])) {
     <div class="content">
         <!-- Top Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
-            <div class="container-fluid">
-                <h4 class="navbar-brand">Land Owner Dashboard</h4>
-                <div class="ms-auto d-flex align-items-center">
-                    <span class="me-3">Welcome, <?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?>!</span>
-                    <!-- User Dropdown -->
-<div class="dropdown">
-    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fas fa-user-circle fa-2x text-primary"></i>
-    </a>
-    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
-        <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
-        <li><a class="dropdown-item" href="change_password.php"><i class="fas fa-key me-2"></i>Change Password</a></li>
-        <li><a class="dropdown-item text-danger" href="../auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-    </ul>
-</div>
+    <div class="container-fluid">
+        <h4 class="navbar-brand">Register Land</h4>
+        <div class="ms-auto d-flex align-items-center">
+            <span class="me-3 text-primary fw-bold">
+                Welcome, <?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?>!
+            </span>
 
-                </div>
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="<?= $pictureDataUrl ?>" alt="User" class="profile-pic-dropdown">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
+                    <li><a class="dropdown-item" href="change_password.php"><i class="fas fa-key me-2"></i>Change Password</a></li>
+                    <li><a class="dropdown-item text-danger" href="../auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                </ul>
             </div>
-        </nav>
+        </div>
+    </div>
+</nav>
 
 
      <!--   <div class="content">  -->

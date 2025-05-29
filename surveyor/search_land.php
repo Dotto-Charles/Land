@@ -1,13 +1,13 @@
 <?php
 
 session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'buyer') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'surveyor') {
     header("Location: ../auth/login.php");
     exit();
 }
 
 include '../config/db.php';
-
+include '../auth/get_user_picture.php'; // Load $pictureDataUrl here
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $land_title_no = trim($_POST['land_title_no']);
 
@@ -70,13 +70,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 .back-btn:hover {
     background-color: #1b5e20; /* Darker green on hover */
 }
-.profile-pic-dropdown {
+    .profile-pic-dropdown {
         width: 40px;
         height: 40px;
         object-fit: cover;
         border-radius: 50%;
         border: 2px solid #007bff;
     }
+
+
 </style>
 
 </head>
@@ -90,29 +92,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <p><i class="fas fa-circle text-success"></i> Online</p>
         </div>
         <ul class="nav flex-column mt-2">
-            <li class="nav-item">
-                <a href="buyer_dashboard.php" class="nav-link"><i class="fa fa-user"></i> Dashboard</a>
-            </li>
-        
-            <li class="nav-item">
-                <a href="search_land.php" class="nav-link"><i class="fas fa-search"></i> Search Land</a>
-            </li>
-            <li class="nav-item">
-                <a href="purchase_land.php" class="nav-link"><i class="fas fa-envelope-open-text"></i> Sell Land</a>
-            </li>
-            <li class="nav-item">
-                <a href="owner_approve_requests.php" class="nav-link"><i class="fas fa-thumbs-up"></i> Approve Requests</a>
-            </li>
-            <li class="nav-item">
-                <a href="owner_transfer_history.php" class="nav-link"><i class="fas fa-history"></i> Transfer History</a>
-            </li>
-            <li class="nav-item">
-                <a href="see_lands.php" class="nav-link"><i class="fas fa-map"></i> Buy Land</a>
-            </li>
-            <li class="nav-item">
-                <a href="my_lands.php" class="nav-link"><i class="fas fa-globe"></i> View Your Land</a>
-            </li>
-            
+          <li class="nav-item"><a href="surveyor_dashboard.php" class="nav-link"><i class="fa fa-home"></i> Dashboard</a></li>
+            <li class="nav-item"><a href="approve_title_requests.php" class="nav-link"><i class="fas fa-check-circle"></i> Approve Title Number</a></li>
+            <li class="nav-item"><a href="search_land.php" class="nav-link"><i class="fas fa-search"></i> Search Land</a></li>
         </ul>
     </div>
 
@@ -140,6 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 </nav>
+
     <div class="container">
     <a href="javascript:history.back()" class="back-btn">Back</a>
 

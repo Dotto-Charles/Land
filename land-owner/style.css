@@ -81,3 +81,10 @@ body {
         background-color: #f0f0f0;
     }
 
+.profile-pic-dropdown {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #007bff;
+}

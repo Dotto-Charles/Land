@@ -1,30 +1,37 @@
 <?php
-session_start();
-require_once '../config/db.php';    
+include_once '../config/db.php';
 
-// Redirect if not logged in
-if (!isset($_SESSION['user_id'])) {
+session_start();
+include '../auth/get_user_picture.php'; // Load $pictureDataUrl here
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'buyer') {
     header("Location: ../auth/login.php");
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
+$owner_id = $_SESSION['user_id'];
 
-// Fetch all lands that belong to the logged-in user
-$stmt = $pdo->prepare("SELECT * FROM land_parcels WHERE owner_id = ?");
-$stmt->execute([$user_id]);
-$lands = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Get all lands owned by this owner with pending approval and already paid
+$stmt = $pdo->prepare("
+    SELECT p.*, l.land_title_no, u.first_name AS buyer_name
+    FROM payments p
+    JOIN land_parcels l ON p.land_id = l.land_id
+    JOIN users u ON p.payer_id = u.user_id
+    WHERE l.owner_id = ? AND p.payment_status = 'paid' AND l.owner_approval_status = 'pending'
+");
+$stmt->execute([$owner_id]);
+$requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Lands</title>
+    <title>Approve Land Sales</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../officials/styleofiicials.css"> <!-- External CSS -->
+    <link rel="stylesheet" href="../land-owner/style.css"> <!-- External CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-     <link rel="stylesheet" href="../land-owner/style.css">
+     <link rel="stylesheet" href="style.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
         form { margin-bottom: 30px; }
@@ -33,7 +40,7 @@ $lands = $stmt->fetchAll(PDO::FETCH_ASSOC);
         th { background-color: #f4f4f4; }
         button { padding: 10px 15px; }
         .msg { color: green; margin-bottom: 10px; }
-          .profile-pic-dropdown {
+        .profile-pic-dropdown {
         width: 40px;
         height: 40px;
         object-fit: cover;
@@ -46,14 +53,14 @@ $lands = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="d-flex">
     <!-- Sidebar -->
     <div class="sidebar">
-       <div class="sidebar-profile text-center p-3">
-    <img src="<?= $pictureDataUrl ?>" alt="Profile Picture">
-    <h5><?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?></h5>
-    <p><i class="fas fa-circle text-success"></i> Online</p>
+        <div class="sidebar-profile">
+            <img src="../icons/profile.png" alt="Profile">
+            <h5><?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?></h5>
+            <p><i class="fas fa-circle text-success"></i> Online</p>
         </div>
         <ul class="nav flex-column mt-2">
             <li class="nav-item">
-                <a href="buyer_dashboard.php" class="nav-link"><i class="fa fa-user"></i> Dashboard</a>
+                <a href="buyer_dashboard.php" class="nav-link"><i class="fa fa-home"></i> Dashboard</a>
             </li>
         
             <li class="nav-item">
@@ -63,10 +70,10 @@ $lands = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <a href="purchase_land.php" class="nav-link"><i class="fas fa-envelope-open-text"></i> Sell Land</a>
             </li>
             <li class="nav-item">
-                <a href="owner_approve_requests.php" class="nav-link"><i class="fas fa-thumbs-up"></i> Approve Requests</a>
+                <a href="buyer_approve_requests.php" class="nav-link"><i class="fas fa-thumbs-up"></i> Approve Requests</a>
             </li>
             <li class="nav-item">
-                <a href="owner_transfer_history.php" class="nav-link"><i class="fas fa-history"></i> Transfer History</a>
+                <a href="buyer_transfer_history.php" class="nav-link"><i class="fas fa-history"></i> Transfer History</a>
             </li>
             <li class="nav-item">
                 <a href="see_lands.php" class="nav-link"><i class="fas fa-map"></i> Buy Land</a>
@@ -81,7 +88,7 @@ $lands = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- Main Content -->
     <div class="content">
         <!-- Top Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
+         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
     <div class="container-fluid">
         <h4 class="navbar-brand">Register Land</h4>
         <div class="ms-auto d-flex align-items-center">
@@ -103,41 +110,47 @@ $lands = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </nav>
 
+        <div class="main-content">
+    <h2>Land Sale Approval Requests</h2>
 
-<div class="main-content">
-    <h2>All Lands Owned by You</h2>
-
-    <?php if (count($lands) > 0): ?>
+    <?php if (count($requests) > 0): ?>
         <table border="1" cellpadding="10">
             <tr>
-                <th>Title No</th>
-                <th>Size (Acres)</th>
-                <th>Latitude</th>
-                <th>Longtude</th>
-                <th>Region</th>
-                <th>District</th>
-                <th>Ward</th>
-                <th>Street/Village</th>
-                <th>Status</th>
+                <th>Buyer</th>
+                <th>Land Title No</th>
+                <th>Amount</th>
+                <th>Control Number</th>
+                <th>Action</th>
             </tr>
-            <?php foreach ($lands as $land): ?>
+            <?php foreach ($requests as $row): ?>
                 <tr>
-                    <td><?= htmlspecialchars($land['land_title_no']) ?></td>
-                    <td><?= htmlspecialchars($land['land_size']) ?></td>
-                    <td><?= htmlspecialchars($land['latitude']) ?></td>
-                    <td><?= htmlspecialchars($land['longitude']) ?></td>
-                    <td><?= htmlspecialchars($land['region_name']) ?></td>
-                    <td><?= htmlspecialchars($land['district_name']) ?></td>
-                    <td><?= htmlspecialchars($land['ward_name']) ?></td>
-                    <td><?= htmlspecialchars($land['village_name']) ?></td>
-                    <td><?= htmlspecialchars($land['registration_status']) ?></td>
+                    <td><?= htmlspecialchars($row['buyer_name']) ?></td>
+                    <td><?= htmlspecialchars($row['land_title_no']) ?></td>
+                    <td><?= number_format($row['amount'], 2) ?> TZS</td>
+                    <td><?= htmlspecialchars($row['transaction_id']) ?></td>
+                    <td>
+                        <form method="POST" action="process_owner_approval.php" style="display:inline;">
+                            <input type="hidden" name="land_id" value="<?= $row['land_id'] ?>">
+                            <button type="submit" name="approve" class="btn-approve">Approve</button>
+                        </form>
+                        <form method="POST" action="process_owner_approval.php" style="display:inline;">
+                            <input type="hidden" name="land_id" value="<?= $row['land_id'] ?>">
+                            <button type="submit" name="reject" class="btn-reject">Reject</button>
+                        </form>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </table>
-    <?php else: ?>
-        <p>You currently have no registered lands.</p>
-    <?php endif; ?>
+        <?php else: ?>
+    <div class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+        There are no pending approval requests at the moment.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<?php endif; ?>
+
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
 </body>
 </html>

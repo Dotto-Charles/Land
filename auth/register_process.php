@@ -11,6 +11,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $phone_number = trim($_POST['phone_number']);
     $email = trim($_POST['email']);
     $role = $_POST['role'];
+    $picture = file_get_contents($_FILES['picture']['tmp_name']);
+
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
@@ -41,21 +43,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Insert into database
-        $sql = "INSERT INTO users (first_name, second_name, last_name, sex, national_id, phone_number, email, password, role)
-                VALUES (:first_name, :second_name, :last_name, :sex, :national_id, :phone_number, :email, :password, :role)";
+        $sql = "INSERT INTO users (first_name, second_name, last_name, sex, national_id, phone_number, email, picture, password, role)
+                VALUES (:first_name, :second_name, :last_name, :sex, :national_id, :phone_number, :email, :picture, :password, :role)";
 
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':first_name'   => $first_name,
-            ':second_name'  => $second_name,
-            ':last_name'    => $last_name,
-            ':sex'          => $sex,
-            ':national_id'  => $national_id,
-            ':phone_number' => $phone_number,
-            ':email'        => $email,
-            ':password'     => $hashed_password,
-            ':role'         => $role
-        ]);
+        $stmt = $pdo->prepare($sql);
+$stmt->bindParam(':first_name', $first_name);
+$stmt->bindParam(':second_name', $second_name);
+$stmt->bindParam(':last_name', $last_name);
+$stmt->bindParam(':sex', $sex);
+$stmt->bindParam(':national_id', $national_id);
+$stmt->bindParam(':phone_number', $phone_number);
+$stmt->bindParam(':email', $email);
+$stmt->bindParam(':password', $hashed_password);
+$stmt->bindParam(':role', $role);
+$stmt->bindParam(':picture', $picture, PDO::PARAM_LOB); // 👈 Important!
+
+$stmt->execute();
+
 
         $_SESSION['success'] = "Registration successful!";
         header("Location: login.php");
