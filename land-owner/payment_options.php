@@ -1,34 +1,31 @@
 <?php
+include_once '../config/db.php';
 session_start();
-include '../config/db.php'; 
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'landowner') {
-    header("Location: ../auth/login.php");
-    exit();
+// Check if the control number is passed in the query string
+if (!isset($_GET['transaction_id'])) {
+    die("Invalid request. Control number is missing.");
 }
 
-$userId = $_SESSION['user_id'];
-$pictureDataUrl = '../icons/default_profile.jpg'; // Default image
+$transaction_id = $_GET['transaction_id'];
 
-try {
-    $stmt = $pdo->prepare("SELECT picture FROM users WHERE user_id = ?");
-    $stmt->execute([$userId]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+// Fetch payment record by control number
+$stmt = $pdo->prepare("SELECT * FROM payments WHERE transaction_id = ?");
+$stmt->execute([$transaction_id]);
+$payment = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($row && !empty($row['picture'])) {
-        $base64Image = base64_encode($row['picture']);
-        $pictureDataUrl = 'data:image/jpeg;base64,' . $base64Image;
-    }
-} catch (PDOException $e) {
-    die("Database error: " . $e->getMessage());
+if (!$payment) {
+    die("Payment record not found.");
 }
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Owner Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Options</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../officials/styleofiicials.css">
@@ -54,10 +51,27 @@ try {
             width: 60px;
             height: 60px;
         }
+        .payment-options .btn.mobile {
+    background: linear-gradient(135deg, #28a745, #218838);
+}
+
+.payment-options .btn.mobile:hover {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+}
+
+.payment-options .btn.bank {
+    background: linear-gradient(135deg, #17a2b8, #117a8b);
+}
+
+.payment-options .btn.bank:hover {
+    background: linear-gradient(135deg, #117a8b, #0f6674);
+}
+
     </style>
 </head>
 <body>
-<div class="d-flex">
+
+    <div class="d-flex">
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-profile text-center p-3">
@@ -79,7 +93,7 @@ try {
     </div>
 
     <!-- Main Content -->
-    <div class="content flex-grow-1">
+      <div class="content flex-grow-1">
         <!-- Top Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
             <div class="container-fluid">
@@ -92,8 +106,8 @@ try {
                             <img src="<?= $pictureDataUrl ?>" class="profile-pic-dropdown" alt="User">
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="../auth/profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="../auth/change_password.php"><i class="fas fa-key me-2"></i>Change Password</a></li>
+                            <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="change_password.php"><i class="fas fa-key me-2"></i>Change Password</a></li>
                             <li><a class="dropdown-item text-danger" href="../auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                         </ul>
                     </div>
@@ -101,41 +115,37 @@ try {
                 </div>
             </div>
         </nav>
-
-        <!-- Dashboard Content -->
+        
         <div class="container mt-4">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card text-center">
-                        <div class="card-body">
-                            <img src="../icons/register.png" class="icon-img mb-2" alt="Register">
-                            <h5><a href="register_land.php">Register Land</a></h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card text-center">
-                        <div class="card-body">
-                            <img src="../icons/search.png" class="icon-img mb-2" alt="Search">
-                            <h5><a href="search_land.php">Search Land</a></h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card text-center">
-                        <div class="card-body">
-                            <img src="../icons/sell.png" class="icon-img mb-2" alt="Sell">
-                            <h5><a href="purchase_land.php">Sell Land</a></h5>
-                        </div>
-                    </div>
-                </div>
-                <!-- Add more dashboard cards as needed -->
+        <header>
+            <h2>Payment Options</h2>
+        </header>
+
+    
+            <h3>Land Title No: <?= $payment['land_id']; ?></h3>
+            <p><strong>Price:</strong> <?= number_format($payment['amount'], 2); ?> TZS</p>
+            <p><strong>Control Number:</strong> <?= $payment['transaction_id']; ?></p>
+
+            <h4>Choose Payment Method:</h4>
+
+            <!-- Payment Method Options -->
+            <div class="payment-options">
+                <form method="POST" action="process_mobile_payment.php">
+    <input type="hidden" name="transaction_id" value="<?= $payment['transaction_id']; ?>">
+    <button type="submit" class="btn mobile">Pay via Mobile (MPesa)</button>
+</form>
+
+<form method="POST" action="process_bank_payment.php">
+    <input type="hidden" name="transaction_id" value="<?= htmlspecialchars($payment['transaction_id']); ?>">
+    <button type="submit" class="btn bank">Pay via Bank</button>
+</form>
+
+
             </div>
         </div>
     </div>
-</div>
-
-<!-- Bootstrap JS -->
+  </div>  </div>  
+  <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

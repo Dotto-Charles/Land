@@ -26,13 +26,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION['national_id'] = $row['national_id'];
                     $_SESSION['role'] = $row['role'];
 
+                    logAction($pdo, $row['user_id'], $row['first_name'] . ' ' . $row['last_name'], $row['role'], 'User logged in');
+
+
                     if ($_SESSION['role'] == 'government_official') {
                         header('Location: ../officials/officials_dashboard.php');
                     } elseif ($_SESSION['role'] == 'landowner') {
                         header("Location: ../land-owner/owner_dashboard.php");
-                    } elseif ($_SESSION['role'] == 'buyer') {
+                    } 
+                    elseif ($_SESSION['role'] == 'admin') {
+                        header("Location: ../admin/admin_dashboard.php");
+                    }
+                    elseif ($_SESSION['role'] == 'buyer') {
                         header("Location: ../buyer/buyer_dashboard.php");
-                    } else {
+                    }
+                     else {
                         header('Location: ../surveyor/surveyor_dashboard.php');
                     }
                     exit();
@@ -47,6 +55,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 }
+function logAction($pdo, $userId, $userName, $role, $action) {
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $stmt = $pdo->prepare("INSERT INTO system_logs (user_id, user_name, role, action, ip_address) VALUES (?, ?, ?, ?, ?)");
+    $stmt->execute([$userId, $userName, $role, $action, $ip]);
+}
+
 ?>
 
 <!DOCTYPE html>
