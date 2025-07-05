@@ -34,7 +34,7 @@ $lands = $stmt->fetchAll(PDO::FETCH_ASSOC);
         height: 40px;
         object-fit: cover;
         border-radius: 50%;
-        border: 2px solid #007bff;
+    
     }
 </style>
 
@@ -50,7 +50,7 @@ $lands = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
         <ul class="nav flex-column mt-2">
             <li class="nav-item">
-                <a href="buyer_dashboard.php" class="nav-link"><i class="fa fa-user"></i> Dashboard</a>
+                <a href="buyer_dashboard.php" class="nav-link"><i class="fa fa-home"></i> Dashboard</a>
             </li>
         
             <li class="nav-item">

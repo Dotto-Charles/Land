@@ -69,7 +69,7 @@ $pendingVerifications = $pdo->query("SELECT COUNT(*) FROM land_parcels WHERE reg
             height: 40px;
             object-fit: cover;
             border-radius: 50%;
-            border: 2px solid #007bff;
+        
         }
 
         .sidebar-profile img {
@@ -100,6 +100,7 @@ $pendingVerifications = $pdo->query("SELECT COUNT(*) FROM land_parcels WHERE reg
     <a href="transfer_requests.php"><i class="fas fa-random"></i> Transfer Requests</a>
     <a href="system_logs.php"><i class="fas fa-file-alt"></i> System Logs</a>
     <a href="settings.php"><i class="fas fa-cogs"></i> Settings</a>
+    <a href="view_message.php"><i class="fas fa-envelope me-2"></i> See Messages</a>
     
 </div>
 

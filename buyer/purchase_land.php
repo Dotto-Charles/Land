@@ -94,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['purchase_land'])) {
                 <a href="owner_approve_requests.php" class="nav-link"><i class="fas fa-thumbs-up"></i> Approve Requests</a>
             </li>
             <li class="nav-item">
-                <a href="owner_transfer_history.php" class="nav-link"><i class="fas fa-history"></i> Transfer History</a>
+                <a href="buyer_transfer_history.php" class="nav-link"><i class="fas fa-history"></i> Transfer History</a>
             </li>
             <li class="nav-item">
                 <a href="see_lands.php" class="nav-link"><i class="fas fa-map"></i> Buy Land</a>

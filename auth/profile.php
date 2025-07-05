@@ -12,10 +12,24 @@ $stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$pictureDataUrl = $user['picture'] 
-    ? 'data:image/jpeg;base64,' . base64_encode($user['picture']) 
+// Determine dashboard URL based on role
+$dashboardMap = [
+    'admin' => '../admin/admin_dashboard.php',
+    'landowner' => '../land-owner/owner_dashboard.php',
+    'buyer' => '../buyer/buyer_dashboard.php',
+    'surveyor' => '../surveyor/surveyor_dashboard.php',
+    'official' => '../officials/officials_dashboard.php'
+];
+
+$role = strtolower($user['role']);
+$dashboardUrl = isset($dashboardMap[$role]) ? $dashboardMap[$role] : 'dashboard.php';
+
+$pictureDataUrl = $user['picture']
+    ? 'data:image/jpeg;base64,' . base64_encode($user['picture'])
     : '../assets/default-avatar.png';
 ?>
+
+<!-- Alert messages remain the same -->
 <?php if (isset($_SESSION['error'])): ?>
     <div class="alert alert-danger alert-dismissible fade show mt-3 mx-3" role="alert">
         <?= $_SESSION['error']; unset($_SESSION['error']); ?>
@@ -30,15 +44,14 @@ $pictureDataUrl = $user['picture']
     </div>
 <?php endif; ?>
 
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>My Profile</title>
+    <!-- Bootstrap and FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
         .profile-img {
@@ -74,6 +87,15 @@ $pictureDataUrl = $user['picture']
 </head>
 <body>
 <div class="container py-5">
+
+    <!-- ✅ Dynamic Back Button -->
+    <div class="mb-4">
+        <a href="<?= $dashboardUrl ?>" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Profile Card (same as before) -->
     <div class="card shadow mx-auto p-4" style="max-width: 600px;">
         <div class="text-center">
             <h3><i class="fas fa-user-circle me-2"></i>My Profile</h3>
@@ -94,39 +116,38 @@ $pictureDataUrl = $user['picture']
         </div>
 
         <div class="d-flex justify-content-center">
-            <a href="edit_profile.php" class="btn btn-outline-primary me-2"><i class="fas fa-edit me-1"></i>Edit Profile</a>
-            <!-- Inside profile.php -->
-<a href="change_password.php" id="changePasswordLink" class="btn btn-warning mt-3">Change Password</a>
-
-<!-- Dimming background -->
-<div id="dimOverlay" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); z-index: 1000;"></div>
-
-<!-- Change Password Form Popup -->
-<div id="changePasswordModal" class="card shadow p-4" 
-     style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background-color: #fff; z-index: 1100; width: 100%; max-width: 400px; border-radius: 10px;">
-
-    <h5 class="mb-3 text-center">Change Password</h5>
-    <form method="POST" action="change_password.php">
-        <div class="mb-3">
-            <label for="current_password" class="form-label">Current Password</label>
-            <input type="password" class="form-control" name="current_password" required>
+            <a href="edit_profile.php" class="btn btn-outline-primary me-2">
+                <i class="fas fa-edit me-1"></i>Edit Profile
+            </a>
+            <a href="change_password.php" id="changePasswordLink" class="btn btn-warning mt-3">Change Password</a>
         </div>
-        <div class="mb-3">
-            <label for="new_password" class="form-label">New Password</label>
-            <input type="password" class="form-control" name="new_password" required>
-        </div>
-        <div class="mb-3">
-            <label for="confirm_password" class="form-label">Confirm New Password</label>
-            <input type="password" class="form-control" name="confirm_password" required>
-        </div>
-        <div class="d-flex justify-content-between">
-            <button type="button" class="btn btn-secondary" id="cancelChangePassword">Cancel</button>
-            <button type="submit" class="btn btn-primary">Change Password</button>
-        </div>
-    </form>
-</div>
 
+        <!-- Dim background overlay -->
+        <div id="dimOverlay" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); z-index: 1000;"></div>
+
+        <!-- Password Modal -->
+        <div id="changePasswordModal" class="card shadow p-4"
+             style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                    background-color: #fff; z-index: 1100; width: 100%; max-width: 400px; border-radius: 10px;">
+            <h5 class="mb-3 text-center">Change Password</h5>
+            <form method="POST" action="change_password.php">
+                <div class="mb-3">
+                    <label for="current_password" class="form-label">Current Password</label>
+                    <input type="password" class="form-control" name="current_password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="new_password" class="form-label">New Password</label>
+                    <input type="password" class="form-control" name="new_password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="confirm_password" class="form-label">Confirm New Password</label>
+                    <input type="password" class="form-control" name="confirm_password" required>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary" id="cancelChangePassword">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Change Password</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -136,19 +157,17 @@ $pictureDataUrl = $user['picture']
         const info = document.getElementById('profileInfo');
         info.style.display = info.style.display === 'none' || info.style.display === '' ? 'block' : 'none';
     }
-</script>
 
-<script>
-document.getElementById('changePasswordLink').addEventListener('click', function (e) {
-    e.preventDefault();
-    document.getElementById('dimOverlay').style.display = 'block';
-    document.getElementById('changePasswordModal').style.display = 'block';
-});
+    document.getElementById('changePasswordLink').addEventListener('click', function (e) {
+        e.preventDefault();
+        document.getElementById('dimOverlay').style.display = 'block';
+        document.getElementById('changePasswordModal').style.display = 'block';
+    });
 
-document.getElementById('cancelChangePassword').addEventListener('click', function () {
-    document.getElementById('dimOverlay').style.display = 'none';
-    document.getElementById('changePasswordModal').style.display = 'none';
-});
+    document.getElementById('cancelChangePassword').addEventListener('click', function () {
+        document.getElementById('dimOverlay').style.display = 'none';
+        document.getElementById('changePasswordModal').style.display = 'none';
+    });
 </script>
 
 </body>

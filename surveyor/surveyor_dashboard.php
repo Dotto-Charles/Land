@@ -39,7 +39,7 @@ try {
             height: 40px;
             object-fit: cover;
             border-radius: 50%;
-            border: 2px solid #007bff;
+        
         }
 
         .sidebar-profile img {
@@ -58,7 +58,7 @@ try {
         height: 40px;
         object-fit: cover;
         border-radius: 50%;
-        border: 2px solid #007bff;
+
     }
 ght: 60px;
         }

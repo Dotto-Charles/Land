@@ -68,7 +68,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'buyer') {
         <!-- Top Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
     <div class="container-fluid">
-        <h4 class="navbar-brand">Register Land</h4>
+        <h4 class="navbar-brand">Buyer Dashboard</h4>
         <div class="ms-auto d-flex align-items-center">
             <span class="me-3 text-primary fw-bold">
                 Welcome, <?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?>!

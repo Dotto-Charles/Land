@@ -57,22 +57,30 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
         <ul class="nav flex-column mt-2">
             <li class="nav-item">
-                <a href="officials_dashboard.php" class="nav-link"><i class="fa fa-home"></i> Dashboard</a>
+                <a href="officials_dashboard.php" class="nav-link">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
             </li>
             <li class="nav-item">
-                <a href="verify_land.php" class="nav-link"><i class="fas fa-check-circle"></i> Verify Land</a>
+                <a href="verify_land.php" class="nav-link">
+                    <i class="fas fa-map-marked-alt"></i> Verify Land
+                </a>
             </li>
             <li class="nav-item">
-                <a href="search_land.php" class="nav-link"><i class="fas fa-search"></i>Search Land</a>
+                <a href="gov_ownership_approval.php" class="nav-link">
+                    <i class="fas fa-tasks"></i> Manage Requests
+                </a>
             </li>
             <li class="nav-item">
-                <a href="gov_transfer_history.php" class="nav-link"><i class="fas fa-envelope-open-text"></i> Transfer History</a>
+                <a href="gov_transfer_history.php" class="nav-link">
+                    <i class="fas fa-history"></i> Transfer History
+                </a>
             </li>
             <li class="nav-item">
-                <a href="gov_ownership_approval.php" class="nav-link"><i class="fas fa-dollar-sign"></i>  Manage Requests</a>
+                <a href="search_land.php" class="nav-link">
+                    <i class="fas fa-search-location"></i> Search Land
+                </a>
             </li>
-           
-            
         </ul>
     </div>
 
@@ -81,7 +89,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <!-- Top Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
     <div class="container-fluid">
-        <h4 class="navbar-brand">Register Land</h4>
+        <h4 class="navbar-brand">Manage Requests</h4>
         <div class="ms-auto d-flex align-items-center">
             <span class="me-3 text-primary fw-bold">
                 Welcome, <?= $_SESSION['first_name'] . ' ' . $_SESSION['last_name']; ?>!

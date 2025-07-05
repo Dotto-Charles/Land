@@ -171,12 +171,22 @@ function logAction($pdo, $userId, $userName, $role, $action) {
             background-color:rgb(14, 241, 71);
         }
 
+       
         .forgot-password {
-            display: block;
-            margin-top: 10px;
-            text-align: right;
-            font-size: 14px;
-        }
+    display: block;
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+    color: #0e4a7b;
+    text-decoration: none;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.forgot-password:hover {
+    color: #0bc95b;
+    text-decoration: underline;
+}
+
 
         footer {
             background: #003366;
@@ -196,7 +206,7 @@ function logAction($pdo, $userId, $userName, $role, $action) {
     <nav>
         <a href="../index.html">Home</a>
         <a href="register.php">Register</a>
-        <a href="#">Contact Us</a>
+        <a href="../contact.php">Contact Us</a>
     
     </nav>
 
@@ -225,7 +235,8 @@ function logAction($pdo, $userId, $userName, $role, $action) {
 
                 <button type="submit" class="btn-login">Log In</button>
 
-                <a href="forgot_password.php" class="forgot-password">Forgot your password?</a>
+               <a href="forgot_password.php" class="forgot-password">Forgot your password?</a>
+
             </form>
         </div>
     </div>
